@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>SmartStore Helper</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 420px;
+      min-height: 720px;
+      margin: 0;
+      padding: 16px;
+      font-family: Arial, sans-serif;
+      color: #222;
+      background: #f5f7fb;
+      position: relative;
+    }
+
+    .app-card {
+      background: #fff;
+      border: 1px solid #e5e8ef;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    }
+
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-size: 19px;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    #result {
+      width: 210px;
+      min-height: 42px;
+      max-height: 90px;
+      padding: 8px 10px;
+      border: 1px solid #dfe5ec;
+      border-radius: 10px;
+      background: #f8fafc;
+      color: green;
+      font-size: 15px;
+      font-weight: bold;
+      text-align: center;
+      white-space: pre-line;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .field {
+      margin-top: 12px;
+    }
+
+    .field label,
+    #optionArea label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: bold;
+      color: #111827;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 10px 11px;
+      border: 1px solid #cfd6df;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: #4b8cff;
+      box-shadow: 0 0 0 3px rgba(75, 140, 255, 0.14);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .delivery-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .delivery-header > label:first-child {
+      margin-bottom: 0;
+    }
+
+    .no-delivery-checkbox {
+      display: flex !important;
+      align-items: center;
+      gap: 6px;
+      margin: 0 !important;
+      font-size: 13px !important;
+      font-weight: normal !important;
+      cursor: pointer;
+    }
+
+    .no-delivery-checkbox input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .checkbox-group {
+      margin-top: 16px;
+      padding: 12px;
+      border: 1px solid #e6e9ef;
+      border-radius: 10px;
+      background: #fbfcfe;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      font-size: 19.5px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1.25;
+    }
+
+    .checkbox-container + .checkbox-container {
+      margin-top: 12px;
+    }
+
+    .checkbox-container input {
+      width: 20px;
+      height: 20px;
+      margin: 0;
+      padding: 0;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .checkbox-container span {
+      display: inline-block;
+    }
+
+    .checkbox-note {
+      margin-left: 4px;
+      font-size: 15px;
+      font-weight: normal;
+      color: #6b7280;
+      vertical-align: middle;
+    }
+
+    #optionArea {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid #dde3ea;
+      border-radius: 10px;
+      background: #f9fafb;
+    }
+
+    .help-text {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #666;
+      line-height: 1.45;
+    }
+
+    .option-guide {
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #eef5ff;
+      color: #334155;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 18px;
+      padding: 12px;
+      border: 0;
+      border-radius: 10px;
+      background: #222;
+      color: #fff;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #111;
+    }
+
+    #loadingOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.25);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loadingBox {
+      background: #fff;
+      padding: 24px 34px;
+      border-radius: 14px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      margin: 0 auto 12px;
+      border: 4px solid #ddd;
+      border-top: 4px solid #555;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-card">
+    <div class="header">
+      <h2>SmartStore Helper</h2>
+      <div id="result"></div>
+    </div>
+
+    <div class="field">
+      <label for="productName">상품명</label>
+      <input
+        id="productName"
+        type="text"
+        placeholder="상품명을 입력하세요"
+      />
+    </div>
+
+    <div class="field">
+      <label for="salePrice">판매가</label>
+      <input
+        id="salePrice"
+        type="text"
+        placeholder="예: 69900 또는 ₩69,900"
+      />
+    </div>
+
+    <div class="field">
+      <div class="delivery-header">
+        <label for="deliveryFee">배송비</label>
+
+        <label class="no-delivery-checkbox">
+          <input type="checkbox" id="noDelivery" />
+          <span>배송없음상품</span>
+        </label>
+      </div>
+
+      <input
+        id="deliveryFee"
+        type="text"
+        placeholder="예: 9900 또는 ₩9,900"
+        value="9900"
+      />
+    </div>
+
+    <div class="checkbox-group">
+      <label class="checkbox-container">
+  <input type="checkbox" id="resetTags">
+
+  <div class="checkbox-text">
+    <div class="title">태그 초기화하기</div>
+    <div class="desc">미체크시 기존 상품과 동일</div>
+  </div>
+</label>
+
+<label class="checkbox-container">
+  <input type="checkbox" id="useOptions">
+
+  <div class="checkbox-text">
+    <div class="title">옵션 입력하기</div>
+    <div class="desc">미체크시 기존 상품과 동일</div>
+  </div>
+</label>
+    </div>
+
+    <div id="optionArea">
+      <div class="option-guide">
+        기본 옵션은 자동으로 들어갑니다.<br />
+        옵션명: 국제배송종류선택<br />
+        옵션값: 일반국제배송(7~8일소요예정),특급국제배송(3~5일소요예정)<br />
+        옵션명 없이 입력하면 자동으로 상품선택= 으로 처리됩니다.
+      </div>
+
+      <label for="extraOptions">추가 옵션</label>
+      <textarea
+        id="extraOptions"
+        placeholder="예시&#10;색상=빨강,노랑&#10;베티(핑크 곰) 단품,벨(흰둥이 개) 단품,6종풀세트(+120000)"
+      ></textarea>
+
+      <div class="help-text">
+        한 줄에 하나씩 입력하세요. 형식: 옵션명=옵션값1,옵션값2<br />
+        옵션명을 생략하면 상품선택=옵션값으로 자동 입력됩니다.
+      </div>
+    </div>
+
+    <button id="applyBtn">
+      입력한 값 반영
+    </button>
+  </div>
+
+  <div id="loadingOverlay" style="display:none;">
+    <div class="loadingBox">
+      <div class="spinner"></div>
+      <div>입력 중입니다...</div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
